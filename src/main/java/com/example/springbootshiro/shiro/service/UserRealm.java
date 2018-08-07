@@ -17,6 +17,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 /**
  * @author carzy
  * @date 2018/08/03
@@ -27,17 +31,19 @@ public class UserRealm extends AuthorizingRealm {
 
     @Autowired
     private UserService userService;
+    @Autowired
+    private RoleService roleService;
+    @Autowired
+    private PermService permService;
 
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) {
         SimpleAuthorizationInfo authorizationInfo = new SimpleAuthorizationInfo();
-        UserInfo userInfo  = (UserInfo)principalCollection.getPrimaryPrincipal();
-        for(SysRole role:userInfo.getRoles()){
-            authorizationInfo.addRole(role.getRole());
-            for(SysPermission p: role.getPermissions()){
-                authorizationInfo.addStringPermission(p.getName());
-            }
-        }
+        String username  = (String) principalCollection.getPrimaryPrincipal();
+        List<SysRole> sysRoles = this.roleService.findUserByName(username);
+        authorizationInfo.addRoles(sysRoles.stream().map(SysRole::getRole).collect(Collectors.toSet()));
+        List<SysPermission> sysPermissions = this.permService.findAllByUsername(username);
+        authorizationInfo.addStringPermissions(sysPermissions.stream().map(SysPermission::getName).collect(Collectors.toSet()));
         return authorizationInfo;
     }
 
@@ -53,8 +59,6 @@ public class UserRealm extends AuthorizingRealm {
             //没找到帐号
             throw new UnknownAccountException();
         }
-        Session session = SecurityUtils.getSubject().getSession();
-        session.setAttribute("user", user);
         //交给AuthenticatingRealm使用CredentialsMatcher进行密码匹配，如果觉得人家的不好可以自定义实现
         SimpleAuthenticationInfo authenticationInfo = new SimpleAuthenticationInfo(
                 user.getUsername(),

@@ -1,9 +1,11 @@
 package com.example.springbootshiro.shiro.service;
 
+import com.example.springbootshiro.shiro.dao.RoleRepository;
+import com.example.springbootshiro.shiro.domain.SysRole;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
 /**
  * @author carzy
@@ -12,15 +14,18 @@ import java.util.Set;
 @Service
 public class RoleService {
 
-    /**
-     * 模拟根据用户uuid查询返回用户的所有角色
-     */
-    public Set<String> getRolesByUserId(Long uid){
-        Set<String> roles = new HashSet<>();
-        roles.add("js");
-        roles.add("java");
-        roles.add("cpp");
-        return roles;
+    private RoleRepository roleRepository;
+
+    @Autowired
+    public void setRoleRepository(RoleRepository roleRepository) {
+        this.roleRepository = roleRepository;
     }
 
+    /**
+     * 查询某个用户的角色
+     * @param username
+     */
+    public List<SysRole> findUserByName(String username){
+        return this.roleRepository.findRolesByUsername(username);
+    }
 }

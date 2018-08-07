@@ -13,12 +13,6 @@ public class SysRole extends Identity {
     private String role;
     private String description;
     /**
-     * 是否启用, 默认启用
-     * 1: 启动
-     * 0: 禁用
-     */
-    private String active = "1";
-    /**
      * 一个用户拥有多个权限
      */
     private List<SysPermission> permissions;
@@ -37,14 +31,6 @@ public class SysRole extends Identity {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public String getActive() {
-        return active;
-    }
-
-    public void setActive(String active) {
-        this.active = active;
     }
 
     public List<SysPermission> getPermissions() {

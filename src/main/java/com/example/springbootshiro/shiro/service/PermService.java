@@ -1,8 +1,14 @@
 package com.example.springbootshiro.shiro.service;
 
+import com.example.springbootshiro.shiro.dao.PermRepository;
+import com.example.springbootshiro.shiro.dao.RoleRepository;
+import com.example.springbootshiro.shiro.domain.SysPermission;
+import com.example.springbootshiro.shiro.domain.SysRole;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -12,20 +18,19 @@ import java.util.Set;
 @Service
 public class PermService {
 
+    private PermRepository permRepository;
+
+    @Autowired
+    public void setPermRepository(PermRepository permRepository) {
+        this.permRepository = permRepository;
+    }
+
     /**
-     * 模拟根据用户uuid查询返回用户的所有权限
+     * 查询某个用户的角色
+     * @param username
      */
-    public Set<String> getPermsByUserId(Long uid){
-        Set<String> perms = new HashSet<>();
-        //js程序员的权限
-        perms.add("html:edit");
-        //c++程序员的权限
-        perms.add("hardware:debug");
-        //java程序员的权限
-        perms.add("mvn:install");
-        perms.add("mvn:clean");
-        perms.add("mvn:test");
-        return perms;
+    public List<SysPermission> findAllByUsername(String username){
+        return this.permRepository.findAllByUsername(username);
     }
 
 }
